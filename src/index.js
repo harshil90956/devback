@@ -32,6 +32,24 @@ const envBool = (name, def = false) => {
 
 const BODY_LIMIT = process.env.BODY_LIMIT || '50mb';
 
+/* ------------------------------ healthcheck ------------------------------- */
+
+app.get('/api/health', (req, res) => {
+  let flowProducer = null;
+  try {
+    flowProducer = getVectorFlowProducer();
+  } catch {}
+
+  res.json({
+    status: 'ok',
+    backendVersion: process.env.RAILWAY_GIT_COMMIT_SHA || process.env.GIT_COMMIT_SHA || 'unknown',
+    workersEnabled: envBool('ENABLE_WORKERS', false),
+    ipSecurityEnabled: false,
+    redisAvailable: Boolean(flowProducer),
+    inkscapeAvailable: inkscapeAvailabilityState() === true,
+  });
+});
+
 /* -------------------------------- CORS ----------------------------------- */
 
 const FRONTEND_ORIGIN = 'https://newsystemfrontendd-production.up.railway.app';
@@ -75,24 +93,6 @@ app.use('/api/vector', vectorRoutes);
 app.use('/api/vector', vectorJobRoutes);
 app.use('/api', printRoutes);
 app.use('/api/download', downloadRoutes);
-
-/* ------------------------------ healthcheck ------------------------------- */
-
-app.get('/api/health', (req, res) => {
-  let flowProducer = null;
-  try {
-    flowProducer = getVectorFlowProducer();
-  } catch {}
-
-  res.json({
-    status: 'ok',
-    backendVersion: process.env.RAILWAY_GIT_COMMIT_SHA || process.env.GIT_COMMIT_SHA || 'unknown',
-    workersEnabled: envBool('ENABLE_WORKERS', false),
-    ipSecurityEnabled: false,
-    redisAvailable: Boolean(flowProducer),
-    inkscapeAvailable: inkscapeAvailabilityState() === true,
-  });
-});
 
 /* ----------------------------- admin seed -------------------------------- */
 
