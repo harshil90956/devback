@@ -52,12 +52,12 @@ app.get('/api/health', (req, res) => {
 
 /* -------------------------------- CORS ----------------------------------- */
 
-const FRONTEND_ORIGIN = 'https://newsystemfrontendd-production.up.railway.app';
+// const FRONTEND_ORIGIN = 'https://devfront-production.up.railway.app';
 
 const corsOptions = {
   origin: (origin, cb) => {
     if (!origin) return cb(null, true); // healthcheck / curl
-    if (origin === FRONTEND_ORIGIN) return cb(null, true);
+    if (origin === process.env.FRONTEND_URL) return cb(null, true);
     return cb(new Error('CORS blocked'), false);
   },
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
