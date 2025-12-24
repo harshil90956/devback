@@ -55,19 +55,36 @@ app.get('/api/health', (req, res) => {
 // const FRONTEND_ORIGIN = 'https://devfront-production.up.railway.app';
 
 const corsOptions = {
-  origin: (origin, cb) => {
-    if (!origin) return cb(null, true); // healthcheck / curl
-    if (origin === process.env.FRONTEND_URL) return cb(null, true);
-    return cb(new Error('CORS blocked'), false);
-  },
-  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  origin: true, // reflect request origin
   credentials: true,
+
+  methods: [
+    "GET",
+    "POST",
+    "PUT",
+    "PATCH",
+    "DELETE",
+    "OPTIONS",
+  ],
+
+  allowedHeaders: [
+    "Content-Type",
+    "Authorization",
+    "X-Requested-With",
+    "Accept",
+    "Origin",
+  ],
+
+  exposedHeaders: [
+    "Content-Type",
+    "Authorization",
+  ],
+
   optionsSuccessStatus: 204,
 };
 
 app.use(cors(corsOptions));
-app.options('*', cors(corsOptions));
+app.options("*", cors(corsOptions));
 
 app.use((req, res, next) => {
   const version = process.env.RAILWAY_GIT_COMMIT_SHA || process.env.GIT_COMMIT_SHA || 'unknown';
